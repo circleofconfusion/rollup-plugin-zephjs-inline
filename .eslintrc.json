@@ -28,6 +28,38 @@
         "semi": [
             "error",
             "always"
+        ],
+        "arrow-spacing": [
+            "error",
+            {
+                "before": true,
+                "after": true
+            }
+        ],
+        "comma-spacing": [
+            "error",
+            {
+                "before": false,
+                "after": true
+            }
+        ],
+        "object-curly-spacing": [
+            "error",
+            "always"
+        ],
+        "array-bracket-spacing": [
+            "error",
+            "always"
+        ],
+        "keyword-spacing": [
+            "error",
+            { 
+                "before": true,
+                "after": true
+            }
+        ],
+        "prefer-template": [
+            "error"
         ]
     }
 }
