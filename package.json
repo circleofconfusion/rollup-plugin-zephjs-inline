@@ -1,0 +1,16 @@
+{
+  "name": "rollup-plugin-zephjs-inline",
+  "version": "0.1.0",
+  "description": "Inlines zephjs component HTML, CSS, and assets.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shane Knudsen",
+  "license": "ISC",
+  "devDependencies": {
+    "@awesomeeng/awesome-utils": "^1.5.0",
+    "acorn": "^7.1.1",
+    "zephjs": "^1.3.1"
+  }
+}
