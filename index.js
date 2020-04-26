@@ -32,12 +32,12 @@ async function inlineReferences(code, origin, quiet) {
     return new Promise(async (resolve) => {
       try {
         let node = AwesomeUtils.Object.get(nodes, path);
-        if (typeof node==='object' && node.type && node.type==='CallExpression' && node.callee && node.callee.type==='Identifier') {
+        if (typeof node === 'object' && node.type && node.type === 'CallExpression' && node.callee && node.callee.type === 'Identifier') {
 
           let revised = null;
-          if (node.callee.name==='html') revised = await inlineHTML(root, code, offset, node, quiet);
-          else if (node.callee.name==='css') revised = await inlineCSS(root, code, offset, node, quiet);
-          else if (node.callee.name==='asset') revised = await inlineAsset(root, code, offset, node, quiet);
+          if (node.callee.name === 'html') revised = await inlineHTML(root, code, offset, node, quiet);
+          else if (node.callee.name === 'css') revised = await inlineCSS(root, code, offset, node, quiet);
+          else if (node.callee.name === 'asset') revised = await inlineAsset(root, code, offset, node, quiet);
           if (revised) {
             code = revised.code;
             offset = revised.offset;
@@ -64,23 +64,23 @@ function inlineHTML(root, code, offset, node, quiet) {
       if (!node.callee) return resolve();
 
       if (!node.callee.type) return resolve();
-      if (node.callee.type!=='Identifier') return resolve();
+      if (node.callee.type !== 'Identifier') return resolve();
 
       if (!node.callee.name) return resolve();
-      if (node.callee.name!=='html') return resolve();
+      if (node.callee.name !== 'html') return resolve();
 
       if (!node.arguments) return resolve();
       if (!(node.arguments instanceof Array)) return resolve();
 
       let args = node.arguments;
-      if (args.length<1) return resolve();
+      if (args.length < 1) return resolve();
 
       let arg = args[0];
       if (!arg) return resolve();
 
       if (!arg.type) return reject('html() statement was not syntactically valid.');
-      if (arg.type==='TemplateLiteral') return resolve(); // template literals are allowed for raw content.
-      if (arg.type!=='Literal') return reject('html() statement may only be a string literal.');
+      if (arg.type === 'TemplateLiteral') return resolve(); // template literals are allowed for raw content.
+      if (arg.type !== 'Literal') return reject('html() statement may only be a string literal.');
       if (!arg.value) return resolve();
 
       let start = arg.start;
@@ -101,10 +101,10 @@ function inlineHTML(root, code, offset, node, quiet) {
         if (!quiet) console.log(`  ${filename}`);
         ({ data } = await loader(filename));
       }
-      if (data===undefined || data===null) return reject(`Could not find inline reference to ${filename}.`);
+      if (data === undefined || data === null) return reject(`Could not find inline reference to ${filename}.`);
 
-      code = `${code.slice(0, start+offset)}\`${data.replace(/`/g, '\\`')}\`${code.slice(end+offset)}`;
-      offset += (data.length-length);
+      code = `${code.slice(0, start + offset)}\`${data.replace(/`/g, '\\`')}\`${code.slice(end + offset)}`;
+      offset += (data.length - length);
 
       resolve({ code, offset });
     }
@@ -122,23 +122,23 @@ function inlineCSS(root, code, offset, node, quiet) {
       if (!node.callee) return resolve();
 
       if (!node.callee.type) return resolve();
-      if (node.callee.type!=='Identifier') return resolve();
+      if (node.callee.type !== 'Identifier') return resolve();
 
       if (!node.callee.name) return resolve();
-      if (node.callee.name!=='css') return resolve();
+      if (node.callee.name !== 'css') return resolve();
 
       if (!node.arguments) return resolve();
       if (!(node.arguments instanceof Array)) return resolve();
 
       let args = node.arguments;
-      if (args.length<1) return resolve();
+      if (args.length < 1) return resolve();
 
       let arg = args[0];
       if (!arg) return resolve();
 
       if (!arg.type || !arg.value) return reject('css() statement was not syntactically valid.');
-      if (arg.type==='TemplateLiteral') return resolve(); // template literals are allowed for raw content.
-      if (arg.type!=='Literal') return reject('css() statement may only be a string literal.');
+      if (arg.type === 'TemplateLiteral') return resolve(); // template literals are allowed for raw content.
+      if (arg.type !== 'Literal') return reject('css() statement may only be a string literal.');
 
       let start = arg.start;
       let end = arg.end;
@@ -158,10 +158,10 @@ function inlineCSS(root, code, offset, node, quiet) {
         if (!quiet) console.log(`  ${filename}`);
         ({ data } = await loader(filename));
       }
-      if (data===undefined || data===null) return reject(`Could not find inline reference to ${filename}.`);
+      if (data === undefined || data === null) return reject(`Could not find inline reference to ${filename}.`);
 
-      code = `${code.slice(0, start+offset)}\`${data.replace(/`/g, '\\`')}\`${code.slice(end+offset)}`;
-      offset += (data.length-length);
+      code = `${code.slice(0, start + offset)}\`${data.replace(/`/g, '\\`')}\`${code.slice(end + offset)}`;
+      offset += (data.length - length);
 
       resolve({ code, offset });
     }
@@ -179,23 +179,23 @@ function inlineAsset(root, code, offset, node, quiet) {
       if (!node.callee) return resolve();
 
       if (!node.callee.type) return resolve();
-      if (node.callee.type!=='Identifier') return resolve();
+      if (node.callee.type !== 'Identifier') return resolve();
 
       if (!node.callee.name) return resolve();
-      if (node.callee.name!=='asset') return resolve();
+      if (node.callee.name !== 'asset') return resolve();
 
       if (!node.arguments) return resolve();
       if (!(node.arguments instanceof Array)) return resolve();
 
       let args = node.arguments;
-      if (args.length<1) return resolve();
+      if (args.length < 1) return resolve();
 
-      let arg = args.length===1 ? args[0] : args[1];
+      let arg = args.length === 1 ? args[0] : args[1];
       if (!arg) return resolve();
 
       if (!arg.type || !arg.value) return reject('asset() statement was not syntactically valid.');
-      if (arg.type==='TemplateLiteral') return resolve(); // template literals are allowed for raw content.
-      if (arg.type!=='Literal') return reject('asset() statement may only be a string literal.');
+      if (arg.type === 'TemplateLiteral') return resolve(); // template literals are allowed for raw content.
+      if (arg.type !== 'Literal') return reject('asset() statement may only be a string literal.');
 
       let start = arg.start;
       let end = arg.end;
@@ -224,8 +224,8 @@ function inlineAsset(root, code, offset, node, quiet) {
       if (!mimetype) return reject(`asset() could not associate valid mime type with filename: ${filename}`);
       data = `data:${mimetype};base64,${data.toString('base64')}`;
 
-      code = `${code.slice(0, start+offset)}\`${data}\`${code.slice(end+offset)}`;
-      offset += (data.length-length);
+      code = `${code.slice(0, start + offset)}\`${data}\`${code.slice(end + offset)}`;
+      offset += (data.length - length);
 
       resolve({ code, offset });
     }
@@ -235,20 +235,20 @@ function inlineAsset(root, code, offset, node, quiet) {
   });
 }
 
-function loader(url, rootDir, encoding='utf-8') {
+function loader(url, rootDir, encoding = 'utf-8') {
   return new Promise(async (resolve, reject) => {
     try {
       if (url.startsWith('http:') || url.startsWith('https:') || url.startsWith('ftp:')) {
         let tried = [];
         let response = null;
         while (true) {
-          if (tried.indexOf(`${url}`)>-1) return reject('URL redirect created a circular reference and could not be resolved.');
+          if (tried.indexOf(`${url}`) > -1) return reject('URL redirect created a circular reference and could not be resolved.');
           tried.push(url);
 
           response = await AwesomeUtils.Request.get(url);
 
-          if (response.statusCode===200) break;
-          else if (response.statusCode>300 && response.statusCode<=308) {
+          if (response.statusCode === 200) break;
+          else if (response.statusCode > 300 && response.statusCode <= 308) {
             let newurl = response.headers && response.headers['Location'] || response.headers && response.headers['location'] || null;
             if (newurl) {
               url = newurl;
@@ -259,7 +259,7 @@ function loader(url, rootDir, encoding='utf-8') {
               return reject('URL did not return anything.');
             }
           }
-          else return reject(`URL returned an error code: ${response.statusCode}: ${response.status||''}`);
+          else return reject(`URL returned an error code: ${response.statusCode}: ${response.status || ''}`);
         }
 
         if (!response) return reject('URL did not return anything.');
@@ -301,7 +301,7 @@ function resolveFilename(root, filename, extensions) {
     if (!ext) return null;
     if (!ext.startsWith('.')) ext = `.${ext}`;
 
-    possible = Path.resolve(root, possible+ext);
+    possible = Path.resolve(root, possible + ext);
     if (AwesomeUtils.FS.existsSync(possible)) return possible;
 
     return null;

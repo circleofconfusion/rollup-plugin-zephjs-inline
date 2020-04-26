@@ -60,6 +60,9 @@
         ],
         "prefer-template": [
             "error"
+        ],
+        "space-infix-ops": [
+            "error"
         ]
     }
 }
