@@ -9,7 +9,15 @@ module.exports = function zephjsInline(options = { quiet: true }) {
   return {
     name: 'zephjs-inline',
     transform(code, origin) {
-      return inlineReferences(code, origin, options.quiet);
+			return new Promise (async (resolve, reject) => {
+				try {
+					const { code: transformedCode, dependencies } = await inlineReferences(code, origin, options.quiet);
+					dependencies.forEach(dependency => { this.addWatchFile(dependency) });
+					resolve(transformedCode);
+				} catch {
+					reject();
+				}
+			});
     }
   };
 };
@@ -25,7 +33,9 @@ async function inlineReferences(code, origin, quiet) {
   });
 
   let offset = 0;
-  let paths = AwesomeUtils.Object.paths(nodes);
+	let paths = AwesomeUtils.Object.paths(nodes);
+	let dependencies = new Set();
+
   await AwesomeUtils.Promise.series(paths, (path) => {
     if (!path) return;
 
@@ -40,7 +50,10 @@ async function inlineReferences(code, origin, quiet) {
           else if (node.callee.name === 'asset') revised = await inlineAsset(root, code, offset, node, quiet);
           if (revised) {
             code = revised.code;
-            offset = revised.offset;
+						offset = revised.offset;
+						if (revised.filename) {
+							dependencies.add(revised.filename);
+						}
           }
         }
 
@@ -51,9 +64,9 @@ async function inlineReferences(code, origin, quiet) {
         process.exit();
       }
     });
-  });
+	});
 
-  return code;
+  return { code, dependencies: Array.from(dependencies) };
 }
 
 function inlineHTML(root, code, offset, node, quiet) {
@@ -106,7 +119,7 @@ function inlineHTML(root, code, offset, node, quiet) {
       code = `${code.slice(0, start + offset)}\`${data.replace(/`/g, '\\`')}\`${code.slice(end + offset)}`;
       offset += (data.length - length);
 
-      resolve({ code, offset });
+      resolve({ code, offset, filename });
     }
     catch (ex) {
       return reject(ex);
