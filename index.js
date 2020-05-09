@@ -9,15 +9,15 @@ module.exports = function zephjsInline(options = { quiet: true }) {
   return {
     name: 'zephjs-inline',
     transform(code, origin) {
-			return new Promise (async (resolve, reject) => {
-				try {
-					const { code: transformedCode, dependencies } = await inlineReferences(code, origin, options.quiet);
-					dependencies.forEach(dependency => { this.addWatchFile(dependency) });
-					resolve(transformedCode);
-				} catch {
-					reject();
-				}
-			});
+      return new Promise (async (resolve, reject) => {
+        try {
+          const { code: transformedCode, dependencies } = await inlineReferences(code, origin, options.quiet);
+          dependencies.forEach(dependency => { this.addWatchFile(dependency) });
+          resolve(transformedCode);
+        } catch {
+          reject();
+        }
+      });
     }
   };
 };
@@ -33,8 +33,8 @@ async function inlineReferences(code, origin, quiet) {
   });
 
   let offset = 0;
-	let paths = AwesomeUtils.Object.paths(nodes);
-	let dependencies = new Set();
+  let paths = AwesomeUtils.Object.paths(nodes);
+  let dependencies = new Set();
 
   await AwesomeUtils.Promise.series(paths, (path) => {
     if (!path) return;
@@ -50,10 +50,10 @@ async function inlineReferences(code, origin, quiet) {
           else if (node.callee.name === 'asset') revised = await inlineAsset(root, code, offset, node, quiet);
           if (revised) {
             code = revised.code;
-						offset = revised.offset;
-						if (revised.filename) {
-							dependencies.add(revised.filename);
-						}
+            offset = revised.offset;
+            if (revised.filename) {
+              dependencies.add(revised.filename);
+            }
           }
         }
 
@@ -64,7 +64,7 @@ async function inlineReferences(code, origin, quiet) {
         process.exit();
       }
     });
-	});
+  });
 
   return { code, dependencies: Array.from(dependencies) };
 }
